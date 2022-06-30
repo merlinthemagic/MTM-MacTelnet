@@ -30,6 +30,7 @@ class PasswordAuthentication extends \MTM\MacTelnet\Tools\Shells\Base
 			$rawUser	= $raw[1];
 		}
 		$regExs	= array(
+				"new password\>"									=> "routeros",
 				"\[".$rawUser."\@(.+?)\] \>(\s+)?$"					=> "routeros",
 				"Login failed, incorrect username or password"		=> "error",
 				"Welcome back!"										=> "timeout" //timeout
@@ -49,12 +50,17 @@ class PasswordAuthentication extends \MTM\MacTelnet\Tools\Shells\Base
 				break;
 			}
 		}
+		
 		if ($rType == "routeros") {
-			
 			if ($rValue == "Do you want to see the software license") {
 				//we are the only ones with the information needed to clear the prompt
 				//if we dont clear it here the Destination function will have a hell of a time figuring out whats going on
 				$strCmd	= "n";
+				$regEx	= "(" . implode("|", array_keys($regExs)) . ")";
+				$ctrlObj->getCmd($strCmd, $regEx, $timeout)->get();
+			} elseif ($rValue == "new password\>") {
+				//MT forcing password change, deny the change
+				$strCmd		= chr(3);
 				$regEx	= "(" . implode("|", array_keys($regExs)) . ")";
 				$ctrlObj->getCmd($strCmd, $regEx, $timeout)->get();
 			}
