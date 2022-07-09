@@ -33,6 +33,7 @@ class PasswordAuthentication extends \MTM\MacTelnet\Tools\Shells\Base
 				"new password\>"									=> "routeros",
 				"\[".$rawUser."\@(.+?)\] \>(\s+)?$"					=> "routeros",
 				"Do you want to see the software license\?"			=> "routeros",
+				"remove it, you will be disconnected\."				=> "routeros",
 				"Login failed, incorrect username or password"		=> "error",
 				"Welcome back!"										=> "timeout" //timeout
 		);
@@ -53,6 +54,24 @@ class PasswordAuthentication extends \MTM\MacTelnet\Tools\Shells\Base
 		}
 		
 		if ($rType == "routeros") {
+			if ($rValue == "remove it, you will be disconnected\.") {
+				//we are the only ones with the information needed to clear the prompt
+				//if we dont clear it here the Destination function will have a hell of a time figuring out whats going on
+				$strCmd	= "n";
+				$regEx	= "(" . implode("|", array_keys($regExs)) . ")";
+				$cmdObj		= $ctrlObj->getCmd($strCmd, $regEx, $timeout);
+				$cmdObj->get();
+				$data		= $cmdObj->getReturnData(); //need return data so the prompt is not stripped out
+				
+				$rType	= null;
+				foreach ($regExs as $regEx => $type) {
+					if (preg_match("/".$regEx."/", $data) == 1) {
+						$rValue	= $regEx;
+						$rType	= $type;
+						break;
+					}
+				}
+			}
 			if ($rValue == "Do you want to see the software license\?") {
 				//we are the only ones with the information needed to clear the prompt
 				//if we dont clear it here the Destination function will have a hell of a time figuring out whats going on
@@ -81,7 +100,9 @@ class PasswordAuthentication extends \MTM\MacTelnet\Tools\Shells\Base
 
 			return $this->getDestinationShell($ctrlObj, $userName);
 			
-		} elseif ($rType == "error") {
+		}
+		
+		if ($rType == "error") {
 			throw new \Exception("Connect error: " . $rValue);
 		} elseif ($rType == "timeout") {
 			throw new \Exception("Connection timed out");
