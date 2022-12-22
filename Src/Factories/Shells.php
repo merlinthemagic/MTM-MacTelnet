@@ -1,5 +1,5 @@
 <?php
-//© 2022 Martin Peter Madsen
+//ï¿½ 2022 Martin Peter Madsen
 namespace MTM\MacTelnet\Factories;
 
 class Shells extends Base
@@ -34,8 +34,10 @@ class Shells extends Base
 	{
 		if ($ctrlObj->getType() == "routeros") {
 			return $this->getRouterOsTool();
+		} elseif ($ctrlObj->getType() == "bash") {
+			return $this->getBashTool();
 		} else {
-			throw new Exception("Hot handled for shell type: ".$ctrlObj->getType());
+			throw new \Exception("Hot handled for shell type: ".$ctrlObj->getType());
 		}
 	}
 	public function getRouterOsTool()
@@ -45,9 +47,15 @@ class Shells extends Base
 		}
 		return $this->_s[__FUNCTION__];
 	}
+	public function getBashTool()
+	{
+		if (array_key_exists(__FUNCTION__, $this->_s) === false) {
+			$this->_s[__FUNCTION__]		= new \MTM\MacTelnet\Tools\Shells\Bash\Actions();
+		}
+		return $this->_s[__FUNCTION__];
+	}
 	protected function getBaseShell()
 	{
-		throw new Exception("Current Linux based Mac telnet client does not support authentication for routerOS");
 		$osTool		= \MTM\Utilities\Factories::getSoftware()->getOsTool();
 		if ($osTool->getType() == "linux") {
 			$ctrlObj	= \MTM\Shells\Factories::getShells()->getBash();
