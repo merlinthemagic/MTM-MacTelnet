@@ -14,11 +14,23 @@ class PasswordAuthentication extends \MTM\MacTelnet\Tools\Shells\Base
 	}
 	protected function passwordConnectFromBash($ctrlObj, $macObj, $userName, $password, $timeout=30000)
 	{
-		$strCmd		= "mactelnet";
-		$strCmd		.= " ".$macObj->getAsString("std", false);
-
-		$regEx		= "Login\:";
-		$data		= $ctrlObj->getCmd($strCmd, $regEx, $timeout)->get();
+		$baseCmd	= "mactelnet -A ".$macObj->getAsString("std", false);
+		$regExs		= array(
+				"Login\:"									=> "success",
+				"No such file or directory"					=> "Missing MacTelnet application"
+		);
+		
+		$regEx		= "(" . implode("|", array_keys($regExs)) . ")";
+		$data		= $ctrlObj->getCmd($baseCmd, $regEx, $timeout)->get();
+		
+		foreach ($regExs as $regEx => $msg) {
+			if (preg_match("/".$regEx."/", $data) == 1) {
+				if ($msg !== "success") {
+					throw new \Exception("Connect error: '" . $msg."'");
+				}
+				break;
+			}
+		}
 		
 		$strCmd		= $userName;
 		$regEx		= "Password\:";
@@ -35,7 +47,8 @@ class PasswordAuthentication extends \MTM\MacTelnet\Tools\Shells\Base
 				"Do you want to see the software license\?"			=> "routeros",
 				"remove it, you will be disconnected\."				=> "routeros",
 				"Login failed, incorrect username or password"		=> "error",
-				"Welcome back!"										=> "timeout" //timeout
+				"Welcome back!"										=> "timeout", //timeout
+				"Invalid salt length\:"								=> "invalid"
 		);
 
 		$strCmd		= $password;
@@ -72,6 +85,7 @@ class PasswordAuthentication extends \MTM\MacTelnet\Tools\Shells\Base
 					}
 				}
 			}
+			
 			if ($rValue == "Do you want to see the software license\?") {
 				//we are the only ones with the information needed to clear the prompt
 				//if we dont clear it here the Destination function will have a hell of a time figuring out whats going on
@@ -103,11 +117,16 @@ class PasswordAuthentication extends \MTM\MacTelnet\Tools\Shells\Base
 		}
 		
 		if ($rType == "error") {
-			throw new \Exception("Connect error: " . $rValue);
+			throw new \Exception("Connect error: '" . $rValue."'");
 		} elseif ($rType == "timeout") {
 			throw new \Exception("Connection timed out");
+		} elseif ($rType == "invalid") {
+			//might just be a alpha release issue, but this blocks the connection indefinetly (unless #83 is merged) 
+			//raised in issue: https://github.com/haakonnessjoen/MAC-Telnet/issues/82
+			//added pull request: https://github.com/haakonnessjoen/MAC-Telnet/pull/83
+			throw new \Exception("Connect error: 'Login failed, incorrect username'");
 		} else {
-			throw new \Exception("Not Handled: " . $rType);
+			throw new \Exception("Not Handled for type: " . $rType);
 		}
 	}
 }
