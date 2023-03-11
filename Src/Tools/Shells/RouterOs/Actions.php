@@ -1,5 +1,5 @@
 <?php
-//© 2022 Martin Peter Madsen
+//ï¿½ 2022 Martin Peter Madsen
 namespace MTM\MacTelnet\Tools\Shells\RouterOs;
 
 class Actions extends Destination
@@ -10,19 +10,6 @@ class Actions extends Destination
 	}
 	public function getFormattedUsername($userName)
 	{
-		//default terminal options for all Mikrotik MacTelnet connections.
-		//We need the terminal without colors and a standard width / height
-		$rosOpts	= "ct1000w1000h";
-		if (strpos($userName, "+") !== false) {
-			if (preg_match("/(.*?)\+(.*)/", $userName, $raw) == 1) {
-				//username has options, but they may be the wrong ones
-				$userName	= $raw[1] . "+" . $rosOpts;
-			} else {
-				throw new \Exception("Not handled");
-			}
-		} else {
-			$userName	.= "+" . $rosOpts;
-		}
-		return $userName;
+		return \MTM\Shells\Factories::getTools()->getRouterOs()->formatUsername($userName);
 	}
 }

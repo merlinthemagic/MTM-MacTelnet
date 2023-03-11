@@ -18,19 +18,30 @@ composer require merlinthemagic/mtm-mactelnet
 
 ```
 
+## Post install
+
+
+### ARM64 based Ubuntu (e.g. Raspberry PI 4B):
+```
+
+chmod +x /path/to/MTM/MacTelnet/Resources/MacTelnet/Ubuntu/arm64/mactelnet
+
+
+```
+
 #### Get an SSH shell on a routeros device using password (You will need the MTM-SSH lib for this)
 ```
-$ipAddress	= "192.168.88.1";
-$username		= \MTM\SSH\Factories::getShells()->getRouterOsTool()->getFormattedUsername("username");
+$ipAddress		= "192.168.88.1";
+$username		= \MTM\Shells\Factories::getTools()->getRouterOs()->formatUsername("username");
 $password		= "verySecretSshPassword";
 
-$sshCtrlObj	= \MTM\SSH\Factories::getShells()->passwordAuthentication($ipAddress, $username, $password	);
+$sshCtrlObj		= \MTM\SSH\Factories::getShells()->passwordAuthentication($ipAddress, $username, $password	);
 ```
 
 #### Bounce to another routerOS device using mac telnet:
 ```
-$macAddress	= "112233445566";
-$username		= \MTM\MacTelnet\Factories::getShells()->getRouterOsTool()->getFormattedUsername("username");
+$macAddress		= "112233445566";
+$username		= \MTM\Shells\Factories::getTools()->getRouterOs()->formatUsername("username");
 $password		= "verySecret";
 
 $ctrlObj		= \MTM\MacTelnet\Factories::getShells()->passwordAuthentication($macAddress, $username, $password, $sshCtrlObj);
@@ -39,8 +50,8 @@ $ctrlObj		= \MTM\MacTelnet\Factories::getShells()->passwordAuthentication($macAd
 
 #### Get a shell on RouterOS using MacTelnet (Requires MacTelnet: https://github.com/haakonnessjoen/MAC-Telnet):
 ```
-$macAddress	= "112233445566";
-$username		= \MTM\MacTelnet\Factories::getShells()->getRouterOsTool()->getFormattedUsername("username");
+$macAddress		= "112233445566";
+$username		= \MTM\Shells\Factories::getTools()->getRouterOs()->formatUsername("username");
 $password		= "verySecret";
 
 $ctrlObj		= \MTM\MacTelnet\Factories::getShells()->passwordAuthentication($macAddress, $username, $password);

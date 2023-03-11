@@ -1,3 +1,5 @@
+
+##included in this folder are pre-compiled versions of mac-telnet, but if you want to compile from scratch here are instructions
 ##compile the mac-telnet client on ubuntu running on raspberry pi (arm64)
 
 mkdir -p /tmp/mactelnet
