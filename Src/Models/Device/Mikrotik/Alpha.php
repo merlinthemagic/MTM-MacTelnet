@@ -12,6 +12,11 @@ abstract class Alpha extends \MTM\Utilities\Tools\Validations\V1
 	protected $_username=null;
 	protected $_password=null;
 	
+	public function __construct()
+	{
+		$this->setUsername("admin");
+		$this->setPassword("");
+	}
 	public function setIdentity($val)
 	{
 		$this->isStr($val, true);
