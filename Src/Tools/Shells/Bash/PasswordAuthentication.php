@@ -14,7 +14,16 @@ class PasswordAuthentication extends \MTM\MacTelnet\Tools\Shells\Base
 	}
 	protected function passwordConnectFromBash($ctrlObj, $macObj, $userName, $password, $timeout=30000)
 	{
-		$baseCmd	= "mactelnet -A ".$macObj->getAsString("std", false);
+		$mtPath		= "mactelnet";
+		if ($ctrlObj->getParent() === null) {
+			try {
+				$mtPath		= \MTM\MacTelnet\Facts::getTools()->getMacTelnet()->getMacTelnetPath();
+			} catch (\Exception $e) {
+				//go with the default, hopefully its installed
+			}
+		}
+
+		$baseCmd	= $mtPath." -A ".$macObj->getAsString("std", false);
 		$regExs		= array(
 				"Login\:"									=> "success",
 				"No such file or directory"					=> "Missing MacTelnet application"
@@ -46,7 +55,7 @@ class PasswordAuthentication extends \MTM\MacTelnet\Tools\Shells\Base
 				"\[".$rawUser."\@(.+?)\] \>(\s+)?$"					=> "routeros",
 				"Do you want to see the software license\?"			=> "routeros",
 				"remove it, you will be disconnected\."				=> "routeros",
-				"Login failed, incorrect username or password"		=> "error",
+				"Login failed, incorrect username or password"		=> "invalid",
 				"Welcome back!"										=> "timeout", //timeout
 				"Invalid salt length\:"								=> "invalid"
 		);
@@ -124,7 +133,7 @@ class PasswordAuthentication extends \MTM\MacTelnet\Tools\Shells\Base
 			//might just be a alpha release issue, but this blocks the connection indefinetly (unless #83 is merged) 
 			//raised in issue: https://github.com/haakonnessjoen/MAC-Telnet/issues/82
 			//added pull request: https://github.com/haakonnessjoen/MAC-Telnet/pull/83
-			throw new \Exception("Connect error: 'Login failed, incorrect username'");
+			throw new \Exception("Connect error: 'Login failed, incorrect username'", 88236); //used to determine if the default admin / "" is not valid
 		} else {
 			throw new \Exception("Not Handled for type: " . $rType);
 		}

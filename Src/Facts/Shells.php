@@ -1,6 +1,6 @@
 <?php
 //� 2022 Martin Peter Madsen
-namespace MTM\MacTelnet\Factories;
+namespace MTM\MacTelnet\Facts;
 
 class Shells extends Base
 {

@@ -13,7 +13,7 @@ class Destination extends PasswordAuthentication
 			//use: \MTM\MacTelnet\Factories::getShells()->getRouterOsTool()->getFormattedUsername($userName);
 			throw new \Exception("Username is invalid for RouterOs");
 		}
-		$childObj	= \MTM\MacTelnet\Factories::getShells()->getRouterOs();
+		$childObj	= \MTM\MacTelnet\Facts::getShells()->getRouterOs();
 		$childObj->setParent($ctrlObj);
 		$ctrlObj->setChild($childObj);
 		//init the shell, we are already logged in

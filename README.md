@@ -24,8 +24,30 @@ composer require merlinthemagic/mtm-mactelnet
 ### ARM64 based Ubuntu (e.g. Raspberry PI 4B):
 ```
 
+chown php-user:php-user /path/to/MTM/MacTelnet/Resources/MacTelnet/Ubuntu/arm64/mactelnet
 chmod +x /path/to/MTM/MacTelnet/Resources/MacTelnet/Ubuntu/arm64/mactelnet
 
+```
+#### get all devices announcing themselves via MNDP
+
+```
+
+$toolObj	= \MTM\MacTelnet\Facts::getTools()->getMacTelnet();
+$msTimeout	= 2500;
+$devObjs	= $toolObj->discover(msTimeout);
+foreach ($devObjs as $devObj) {
+	
+	//get data available via MNDP announcements
+	echo $devObj->getLicenseId()."\n";
+	echo $devObj->getModel()."\n";
+	
+	//execute commands:
+	$devObj->setUsername("admin")->setPassword("");
+	
+	$strCmd		= ":put [/system/routerboard/settings/get boot-device];";
+	echo $devObj->getCmdReturn($strCmd)."\n";
+	
+}
 
 ```
 
@@ -44,7 +66,7 @@ $macAddress		= "112233445566";
 $username		= \MTM\Shells\Factories::getTools()->getRouterOs()->formatUsername("username");
 $password		= "verySecret";
 
-$ctrlObj		= \MTM\MacTelnet\Factories::getShells()->passwordAuthentication($macAddress, $username, $password, $sshCtrlObj);
+$ctrlObj		= \MTM\MacTelnet\Facts::getShells()->passwordAuthentication($macAddress, $username, $password, $sshCtrlObj);
 
 ```
 
@@ -54,7 +76,7 @@ $macAddress		= "112233445566";
 $username		= \MTM\Shells\Factories::getTools()->getRouterOs()->formatUsername("username");
 $password		= "verySecret";
 
-$ctrlObj		= \MTM\MacTelnet\Factories::getShells()->passwordAuthentication($macAddress, $username, $password);
+$ctrlObj		= \MTM\MacTelnet\Facts::getShells()->passwordAuthentication($macAddress, $username, $password);
 
 ```
 
