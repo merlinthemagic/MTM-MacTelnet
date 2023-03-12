@@ -54,6 +54,10 @@ abstract class Commands extends Alpha
 		$strCmd			= "y";
 		$regEx			= "system will reboot shortly";
 		$this->getCtrl()->getCmd($strCmd, $regEx)->exec()->get(true);
+		try {
+			$this->_ctrlObj->terminate();
+		} catch (\Exception $e) {
+		}
 		$this->_ctrlObj	= null;
 		return $this;
 	}
@@ -72,7 +76,10 @@ abstract class Commands extends Alpha
 		if ($this->_ctrlObj !== null) {
 			$strCmd			= "/quit";
 			$this->_ctrlObj->getCmd($strCmd, false, 100)->exec()->get(false);
-			$this->_ctrlObj->terminate();
+			try {
+				$this->_ctrlObj->terminate();
+			} catch (\Exception $e) {
+			}
 			$this->_ctrlObj	= null;
 		}
 		return $this;

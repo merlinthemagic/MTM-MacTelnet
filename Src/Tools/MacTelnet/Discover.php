@@ -10,10 +10,13 @@ abstract class Discover extends Alpha
 		$tTime		= intval($timeoutMs / 1000);
 		
 		$devObjs	= array();
-		$strCmd		= $this->getMacTelnetPath()." -l -B -t ".$tTime.";";
+		
+		//lots of hoops to suppress script echo: "Searching for MikroTik routers... Abort with CTRL+C."
+		$strCmd		= "MTM=\$(".$this->getMacTelnetPath()." -l -B -t 5 2>&1 | base64 -w0); echo \$MTM | base64 -d;";
 		exec($strCmd, $rData, $status);
 		$lines		= array_values(array_filter(array_map("trim", $rData)));
 		unset($lines[0]);
+		unset($lines[1]);
 		foreach ($lines as $line) {
 			$parts		= array_values(array_filter(array_map("trim", explode("','", $line))));
 			foreach ($parts as $pId => $part) {
