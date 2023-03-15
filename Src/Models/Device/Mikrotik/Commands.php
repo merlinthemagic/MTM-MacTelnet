@@ -24,30 +24,15 @@ abstract class Commands extends Alpha
 	{
 		return $this->getCtrl()->getCmd($strCmd)->exec()->get($throw);
 	}
-	public function getCmdBootDeviceOpt()
-	{
-		$strCmd		= ":put [/system/routerboard/settings/get boot-device];";
-		return trim($this->getCmdReturn($strCmd, true));
-	}
-	public function setCmdBootDeviceOpt($opt)
-	{
-		//e.g. try-ethernet-once-then-nand
-		$strCmd		= "/system/routerboard/settings/set boot-device=\"".$opt."\";";
-		return trim($this->getCmdReturn($strCmd, true));
-	}
-	public function setCmdIdentity($name)
-	{
-		//changing the identity of the device will break the delimitor on the shell
-		$strCmd		= "/system/identity/set name=\"".$name."\";";
-		$this->_ctrlObj->getCmd($strCmd, false, 250)->exec()->get(false);
-		$this->_ctrlObj->resetDefaultRegEx();
-		
-		$strCmd		= ":put [/system/identity/get name];";
-		return trim($this->getCmdReturn($strCmd, true));
-	}
 	public function setCmdReboot()
 	{
-		$strCmd			= "/system/reboot;";
+		//required for 6 -> 7 net-install upgrades
+		if (strpos($this->getCurrentVersion(), "7") === 0) {
+			$strCmd			= "/system/reboot;";
+		} else {
+			$strCmd			= "/system reboot;";
+		}
+		
 		$regEx			= "Reboot, yes\? \[y\/N\]\:";
 		$this->getCtrl()->getCmd($strCmd, $regEx)->exec()->get(true);
 		
@@ -60,6 +45,42 @@ abstract class Commands extends Alpha
 		}
 		$this->_ctrlObj	= null;
 		return $this;
+	}
+	public function setCmdBootDeviceOpt($opt)
+	{
+		//required for 6 -> 7 net-install upgrades
+		//e.g. try-ethernet-once-then-nand
+		if (strpos($this->getCurrentVersion(), "7") === 0) {
+			$strCmd		= "/system/routerboard/settings/set boot-device=\"".$opt."\";";
+		} else {
+			$strCmd		= "/system routerboard settings set boot-device=\"".$opt."\";";
+		}
+		return trim($this->getCmdReturn($strCmd, true));
+	}
+	public function getCmdBootDeviceOpt()
+	{
+		$strCmd		= ":put [/system/routerboard/settings/get boot-device];";
+		return trim($this->getCmdReturn($strCmd, true));
+	}
+	public function getCmdArchitecture()
+	{
+		//required for 6 -> 7 net-install upgrades
+		if (strpos($this->getCurrentVersion(), "7") === 0) {
+			$strCmd		= ":put [/system/resource/get architecture-name];";
+		} else {
+			$strCmd		= ":put [/system resource get architecture-name];";
+		}
+		return trim($this->getCmdReturn($strCmd, true));
+	}
+	public function setCmdIdentity($name)
+	{
+		//changing the identity of the device will break the delimitor on the shell
+		$strCmd		= "/system/identity/set name=\"".$name."\";";
+		$this->_ctrlObj->getCmd($strCmd, false, 250)->exec()->get(false);
+		$this->_ctrlObj->resetDefaultRegEx();
+		
+		$strCmd		= ":put [/system/identity/get name];";
+		return trim($this->getCmdReturn($strCmd, true));
 	}
 	public function setCmdUpgrade()
 	{

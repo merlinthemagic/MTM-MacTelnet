@@ -9,6 +9,7 @@ abstract class Alpha extends \MTM\Utilities\Tools\Validations\V1
 	protected $_modelNbr=null;
 	protected $_uptime=null;
 	protected $_curVer=null;
+	protected $_cpuArch=null;
 	protected $_username=null;
 	protected $_password=null;
 	
@@ -86,5 +87,18 @@ abstract class Alpha extends \MTM\Utilities\Tools\Validations\V1
 	public function getPassword()
 	{
 		return $this->_password;
+	}
+	public function setArchitecture($val)
+	{
+		$this->isStr($val, true);
+		$this->_cpuArch		= trim($val);
+		return $this;
+	}
+	public function getArchitecture()
+	{
+		if ($this->_cpuArch === null) {
+			$this->setArchitecture($this->getCmdArchitecture());
+		}
+		return $this->_cpuArch;
 	}
 }
