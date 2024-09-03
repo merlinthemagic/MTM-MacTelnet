@@ -1,0 +1,15 @@
+
+##included in this folder are pre-compiled versions of mac-telnet, but if you want to compile from scratch here are instructions
+##compile the mac-telnet client on ubuntu running on raspberry pi (arm64)
+
+mkdir -p /tmp/mactelnet
+cd /tmp/mactelnet
+
+apt-get install build-essential autopoint automake autoconf libssl-dev pkg-config gettext
+
+wget http://github.com/haakonnessjoen/MAC-Telnet/tarball/master -O mactelnet.tar.gz
+tar zxvf mactelnet.tar.gz
+cd haakonness*/
+./autogen.sh
+make all install
+
