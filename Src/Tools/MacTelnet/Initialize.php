@@ -17,6 +17,8 @@ abstract class Initialize extends Discover
 				$archId		= $osTool->getArchitecture();
 				if ($distId === "ubuntu" && $archId === "arm64") {
 					$this->_mtPath	= $basePath."Ubuntu".DIRECTORY_SEPARATOR."arm64".DIRECTORY_SEPARATOR."mactelnet";
+				} elseif ($distId === "ubuntu" && $archId === "x86_64") {
+					$this->_mtPath	= $basePath."Ubuntu".DIRECTORY_SEPARATOR."amd64".DIRECTORY_SEPARATOR."mactelnet";
 				} else {
 					throw new \Exception("Not handled for Distribution: '".$distId."' and architecture: '".$archId."'");
 				}

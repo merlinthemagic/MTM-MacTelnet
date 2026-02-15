@@ -46,6 +46,32 @@ abstract class Commands extends Alpha
 		$this->_ctrlObj	= null;
 		return $this;
 	}
+	public function setCmdReset($noDef=false)
+	{
+		if (strpos($this->getCurrentVersion(), "7") === 0) {
+			$strCmd			= "/system/reset-configuration skip-backup=yes";
+		} else {
+			$strCmd			= "/system reset-configuration skip-backup=yes";
+		}
+		if ($noDef === true) {
+			$strCmd			.= " no-defaults=yes";
+		}
+		
+		$strCmd			.= ";";
+		
+		$regEx			= "Dangerous\! Reset anyway\? \[y\/N\]\:";
+		$this->getCtrl()->getCmd($strCmd, $regEx)->exec()->get(true);
+		
+		$strCmd			= "y";
+		$regEx			= "system configuration will be reset";
+		$this->getCtrl()->getCmd($strCmd, $regEx)->exec()->get(true);
+		try {
+			$this->_ctrlObj->terminate();
+		} catch (\Exception $e) {
+		}
+		$this->_ctrlObj	= null;
+		return $this;
+	}
 	public function setCmdBootDeviceOpt($opt)
 	{
 		//required for 6 -> 7 net-install upgrades

@@ -12,7 +12,7 @@ abstract class Discover extends Alpha
 		$devObjs	= array();
 		
 		//lots of hoops to suppress script echo: "Searching for MikroTik routers... Abort with CTRL+C."
-		$strCmd		= "MTM=\$(".$this->getMacTelnetPath()." -l -B -t 5 2>&1 | base64 -w0); echo \$MTM | base64 -d;";
+		$strCmd		= "MTM=\$(".$this->getMacTelnetPath()." -l -B -t ".$tTime." 2>&1 | base64 -w0); echo \$MTM | base64 -d;";
 		exec($strCmd, $rData, $status);
 		$lines		= array_values(array_filter(array_map("trim", $rData)));
 		unset($lines[0]);

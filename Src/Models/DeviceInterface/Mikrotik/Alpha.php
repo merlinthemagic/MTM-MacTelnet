@@ -30,7 +30,7 @@ abstract class Alpha extends \MTM\Utilities\Tools\Validations\V1
 	public function setMacAddress($macAddr)
 	{
 		$this->isMacAddr($macAddr, true);
-		$this->_macAddr	= strtolower($macAddr);
+		$this->_macAddr		= \MTM\Network\Factories::getMac()->getEui48($macAddr);
 		return $this;
 	}
 	public function getMacAddress()
