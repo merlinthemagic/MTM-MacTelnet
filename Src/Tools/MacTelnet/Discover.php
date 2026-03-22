@@ -14,9 +14,19 @@ abstract class Discover extends Alpha
 		//lots of hoops to suppress script echo: "Searching for MikroTik routers... Abort with CTRL+C."
 		$strCmd		= "MTM=\$(".$this->getMacTelnetPath()." -l -B -t ".$tTime." 2>&1 | base64 -w0); echo \$MTM | base64 -d;";
 		exec($strCmd, $rData, $status);
+		
 		$lines		= array_values(array_filter(array_map("trim", $rData)));
-		unset($lines[0]);
-		unset($lines[1]);
+		if (array_key_exists(0, $lines) === true) {
+			if (strpos($lines[0], "Permission denied") !== false) {
+				//on linux: chmod -x /some/path/mtm-mactelnet/Resources/MacTelnet/Ubuntu/amd64/mactelnet
+				throw new \Exception("Permission to the included 'mactelnet' binary denied, add exe permission", 1111);
+			}
+			unset($lines[0]);
+		}
+		if (array_key_exists(1, $lines) === true) {
+			unset($lines[1]);
+		}
+
 		foreach ($lines as $line) {
 			$parts		= array_values(array_filter(array_map("trim", explode("','", $line))));
 			foreach ($parts as $pId => $part) {
@@ -51,7 +61,7 @@ abstract class Discover extends Alpha
 				}
 
 			} else {
-				throw new \Exception("Not handled");
+				throw new \Exception("Not handled", 1111);
 			}
 		}
 
