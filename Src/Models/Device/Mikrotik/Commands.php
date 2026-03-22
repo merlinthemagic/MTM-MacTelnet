@@ -8,6 +8,11 @@ abstract class Commands extends Alpha
 	
 	public function setCtrlByInterface($ifObj)
 	{
+		if ($this->_ctrlObj !== null) {
+			$ctrlObj			= $this->_ctrlObj;
+			$this->_ctrlObj		= null;
+			$ctrlObj->terminate();
+		}
 		$this->_ctrlObj		= \MTM\MacTelnet\Facts::getShells()->passwordAuthentication($ifObj->getMacAddress(), $this->getUsername(), $this->getPassword());
 		return $this;
 	}

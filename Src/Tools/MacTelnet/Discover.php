@@ -47,7 +47,7 @@ abstract class Discover extends Alpha
 					$devObj->addInterface($parts[7], $macAddr);
 
 				} else {
-					throw new \Exception("Mikrotik device did not return enough detail");
+					throw new \Exception("Mikrotik device did not return enough detail", 1111);
 				}
 
 			} else {
